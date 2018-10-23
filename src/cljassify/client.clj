@@ -1,6 +1,5 @@
 (ns cljassify.client
   (:require [clj-http.client :as client]
-            [clj-http.multipart :as multipart]
             [cheshire.core :as json]
             [clojure.java.io :as io])
   (:import java.util.Base64))
