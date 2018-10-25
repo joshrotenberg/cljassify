@@ -1,0 +1,8 @@
+version: '3'
+services:
+    classificationbox:
+        image: machinebox/classificationbox
+        environment:
+            - MB_KEY=${MB_KEY}
+        ports:
+            - "8080:8080"

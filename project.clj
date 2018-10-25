@@ -3,8 +3,12 @@
   :url "https://github.com/joshrotenberg/cljassify"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "1.8.0"]
+  :dependencies [[org.clojure/clojure "1.9.0"]
                  [clj-http "3.9.1"]
                  [cheshire "5.8.1"]]
-  :profiles
-  {:test {:dependencies [[clj-http-fake "1.0.3"]]}})
+  :javac-options ["-target" "1.8" "-source" "1.8"]
+  :test-selectors {:default (complement :integration)
+                   :integration :integration
+                   :example :example}
+  :profiles {:test 
+             {:dependencies [[clj-http-fake "1.0.3"]]}})

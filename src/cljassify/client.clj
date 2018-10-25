@@ -4,31 +4,63 @@
             [clojure.java.io :as io])
   (:import java.util.Base64))
 
-(def default-box
-  {:host "localhost"
-   :port 8080
-   :debug false
-   :body-only true})
-
-(defn base-request
-  [box]
-  {:server-name (get box :host "localhost")
-   :server-port (get box :port 8080)
-   :debug (get box :debug false)
-   :as :json
-   :accept :json
-   :content-type :json
-   :scheme :http})
-
-(defn- make-request
+(defn- send-request
   [box request]
-  (-> request client/request (cond-> (get box :body-only true) :body)))
+  (-> (merge {:server-name (get box :host "localhost")
+              :server-port (get box :port 8080)
+              :debug (get box :debug false)
+              :as :json
+              :method :get
+              :accept :json
+              :content-type :json
+              :scheme :http}
+             request)
+      client/request
+      (cond-> (get box :body-only true) :body)))
+
+(defn box
+  "Create a box. When called with no arguments, the standard local options will be returned (\"localhost:8080\").
+  Otherwise, specify a host and a port and, optionally:
+  :username and :password for basic authentication, set :debug to true to turn on clj-http debugging, 
+  and set :body-only to false to return the entire response instead of just the body (also for debugging).
+  
+  Note: all client functions can be optionally called without a box parameter to just use the default box, or
+  the *default-box* can be redefined.
+  "
+  ([]
+   (box "localhost" 8080))
+  ([host port & {:keys [username password debug body-only]
+                 :or {username nil
+                      password nil
+                      debug false
+                      body-only true}}]
+   {:host host
+    :port port
+    :username username
+    :password password
+    :debug debug
+    :body-only body-only}))
+
+(def ^:dynamic *default-box* (box))
+
+(defn model
+  "Create a model, optionally giving it a name, id, and ngrams and/or skipgrams options. Classes should be a 
+  string, and a minimum of two are required."
+  [classes & {:keys [name id ngrams skipgrams]
+              :or {name (str (hash classes) "-n")
+                   id (str (hash classes) "-i")}}]
+  (when-not (coll? classes)
+    (throw (IllegalArgumentException. "Classes must be a collection.")))
+  (when-not (<= 2 (count classes))
+    (throw (IllegalArgumentException. "A model must have at least two classes.")))
+  (-> {:name name :id id :classes classes}
+      (cond->> ngrams (merge-with into {:options {:ngrams ngrams}}))
+      (cond->> skipgrams (merge-with into {:options {:skipgrams skipgrams}}))))
 
 (defn- admin
-  ([endpoint] (admin endpoint default-box))
+  ([endpoint] (admin endpoint *default-box*))
   ([endpoint box]
-   (make-request box (merge (base-request box) {:method :get
-                                                :uri endpoint}))))
+   (send-request box {:uri endpoint})))
 
 (defn info
   "Returns information about the box."
@@ -45,10 +77,10 @@
 (defn liveness
   "Returns the sting OK if the box is up and probably fails with a 'java.net.ConnectionException' otherwise."
   ([]
-   (liveness default-box))
+   (liveness *default-box*))
   ([box]
-   (make-request box (merge (dissoc (base-request box) :as) {:method :get
-                                                             :uri "/liveness"}))))
+   (send-request box {:uri "/liveness"
+                      :as :auto})))
 
 (defn create-model
   "Create a model (if it doesn't already exist). Takes a model of the following form:
@@ -64,19 +96,19 @@
     }
   "
   ([model]
-   (create-model default-box model))
+   (create-model *default-box* model))
   ([box model]
-   (make-request box (merge (base-request box) {:method :post
-                                                :body (json/generate-string model)
-                                                :uri "/classificationbox/models"}))))
+   (send-request box {:method :post
+                      :body (json/generate-string model)
+                      :uri "/classificationbox/models"})))
 
 (defn delete-model
   "Delete a model by model id."
   ([model-id]
-   (delete-model default-box model-id))
+   (delete-model *default-box* model-id))
   ([box model-id]
-   (make-request box (merge (base-request box) {:method :delete
-                                                :uri (str "/classificationbox/models/" model-id)}))))
+   (send-request box {:method :delete
+                      :uri (str "/classificationbox/models/" model-id)})))
 
 (defn teach-model
   "Teach a model. Takes a class and a list of example features:
@@ -93,11 +125,11 @@
   }
   "
   ([model-id example]
-   (teach-model default-box model-id example))
+   (teach-model *default-box* model-id example))
   ([box model-id example]
-   (make-request box (merge (base-request box) {:method :post
-                                                :body (json/generate-string example)
-                                                :uri (str "/classificationbox/models/" model-id "/teach")}))))
+   (send-request box {:method :post
+                      :body (json/generate-string example)
+                      :uri (str "/classificationbox/models/" model-id "/teach")})))
 
 (defn teach-model-multi
   "Teach multiple classes with a single request:
@@ -109,11 +141,11 @@
       :inputs [{:key \"user_age\", :type \"number\", :value \"26\"}]}]}
   "
   ([model-id examples]
-   (teach-model-multi default-box model-id examples))
+   (teach-model-multi *default-box* model-id examples))
   ([box model-id examples]
-   (make-request box (merge (base-request box) {:method :post
-                                                :body (json/generate-string examples)
-                                                :uri (str "/classificationbox/models/" model-id "/teach-multi")}))))
+   (send-request box {:method :post
+                      :body (json/generate-string examples)
+                      :uri (str "/classificationbox/models/" model-id "/teach-multi")})))
 
 (defn predict
   "Make predictions based on previously taught examples:
@@ -122,67 +154,77 @@
      :inputs [{:key \"user_age\", :type \"number\", :value \"32\"}]}
   "
   ([model-id features]
-   (predict default-box model-id features))
+   (predict *default-box* model-id features))
   ([box model-id features]
-   (make-request box (merge (base-request box) {:method :post
-                                                :body (json/generate-string features)
-                                                :uri (str "/classificationbox/models/" model-id "/predict")}))))
+   (send-request box {:method :post
+                      :body (json/generate-string features)
+                      :uri (str "/classificationbox/models/" model-id "/predict")})))
 
 (defn model-statistics
   "Returns statistics about the given model."
   ([model-id]
-   (model-statistics default-box model-id))
+   (model-statistics *default-box* model-id))
   ([box model-id]
-   (make-request box (merge (base-request box) {:method :get
-                                                :uri (str "/classificationbox/models/" model-id "/stats")}))))
+   (send-request box {:uri (str "/classificationbox/models/" model-id "/stats")})))
 
 (defn list-models
   "List the known models."
   ([]
-   (list-models default-box))
+   (list-models *default-box*))
   ([box]
-   (make-request box (merge (base-request box) {:method :get
-                                                :uri (str "/classificationbox/models")}))))
+   (send-request box {:uri (str "/classificationbox/models")})))
+
 (defn get-model
   "Get a specific model by id."
   ([model-id]
-   (get-model default-box model-id))
+   (get-model *default-box* model-id))
   ([box model-id]
-   (make-request box (merge (base-request box) {:method :get
-                                                :uri (str "/classificationbox/models/" model-id)}))))
+   (send-request box {:uri (str "/classificationbox/models/" model-id)})))
+
+(defn- read-file-bytes
+  [f]
+  (with-open [out (java.io.ByteArrayOutputStream.)]
+    (io/copy (io/input-stream f) out)
+    (.toByteArray out)))
+
+(defn- base64-encode
+  [bytes]
+  (.encodeToString (Base64/getEncoder) bytes))
+
+(defn- encode-state
+  [state]
+  (condp = (class state)
+    (Class/forName "[B") (base64-encode state)
+    java.io.File (-> state read-file-bytes base64-encode)
+    java.lang.String (-> state io/file read-file-bytes base64-encode)
+    (throw (IllegalArgumentException. "State should be a byte array, a path or a file."))))
+
+(defn upload-state
+  "Upload a model's state:
+  
+    (upload-state \"my_model.dat\")
+    or
+    (upload-state (io/file \"my_model.dat\")
+    or even
+    (upload-state byte-array-that-i-made)
+
+  "
+  ([state]
+   (upload-state *default-box* state))
+  ([box state]
+   (let [encoded (encode-state state)]
+     (send-request box {:method :post
+                        :body (json/generate-string {:base64 encoded})
+                        :uri  "/classificationbox/state"}))))
 
 (defn download-state
-  "Download a model's state:
+  "Download a model's state. Returns a byte array:
   
     (with-open [w (io/output-stream \"my_model.dat\")] 
       (.write w (download-state my-model-id)))
   "
   ([model-id]
-   (download-state default-box model-id))
+   (download-state *default-box* model-id))
   ([box model-id]
-   (make-request box (merge (base-request box) {:method :get
-                                                :as :byte-array
-                                                :uri (str "/classificationbox/state/" model-id)}))))
-
-(defn slurp-bytes
-  "Slurp the bytes from a slurpable thing"
-  [x]
-  (with-open [out (java.io.ByteArrayOutputStream.)]
-    (clojure.java.io/copy (clojure.java.io/input-stream x) out)
-    (.toByteArray out)))
-
-(defn mp
-  [f]
-  (.encodeToString (Base64/getEncoder) (slurp-bytes (io/file f))))
-
-(defn upload-state
-  "Upload a model's state:
-
-    (upload-state \"my_model.dat\")
-  "
-  ([state]
-   (upload-state default-box state))
-  ([box state]
-   (make-request box (merge (base-request box) {:method :post
-                                                :body (json/generate-string {:base64 (mp state)})
-                                                :uri  "/classificationbox/state"}))))
+   (send-request box {:as :byte-array
+                      :uri (str "/classificationbox/state/" model-id)})))
