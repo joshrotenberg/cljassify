@@ -12,6 +12,7 @@ should be complete enough to use for actual applications as well.
 
 ## Usage
 
+### Client
 ```clojure
 ;; define a model ...
 (def my-model (model ["class1" "class2"]))
@@ -35,6 +36,11 @@ should be complete enough to use for actual applications as well.
 ;; => {:classes [{:id "class1" :score 0.60721} {:id "class2" :score 0.39279}]
 ;;     :success true}
  
+```
+
+### DSL
+```clojure
+;; TBD
 ```
 
 ## License
