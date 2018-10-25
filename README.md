@@ -50,7 +50,8 @@ Still a work in progress.
 
 ## Docs
 
-See the [uberdoc](docs/uberdoc.html)
+See the [uberdoc](docs/uberdoc.html).
+
 ## License
 
 Copyright © 2018 josh rotenberg
