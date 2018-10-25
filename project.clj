@@ -6,6 +6,7 @@
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [clj-http "3.9.1"]
                  [cheshire "5.8.1"]]
+  :plugins [[lein-marginalia "0.9.1"]]
   :javac-options ["-target" "1.8" "-source" "1.8"]
   :test-selectors {:default #(not-any? % [:integration :example])
                    :integration :integration
