@@ -48,6 +48,9 @@ Still a work in progress.
 ;; TBD
 ```
 
+## Docs
+
+See the [uberdoc](docs/uberdoc.html)
 ## License
 
 Copyright © 2018 josh rotenberg
