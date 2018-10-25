@@ -2,6 +2,8 @@
 
 [Machine Box][0] [Classificationbox][1] Client Library in Clojure
 
+[![CircleCI](https://circleci.com/gh/joshrotenberg/cljassify.svg?style=svg)](https://circleci.com/gh/joshrotenberg/cljassify)
+
 ## Overview
 
 Classificationbox is great, but I found myself really wishing I had a clean, simple way to do some exploratory
