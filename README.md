@@ -6,11 +6,14 @@
 
 ## Overview
 
-Classificationbox is great, but I found myself really wishing I had a clean, simple way to do some exploratory
-work with it, i.e. with a repl. Clojure is a fantastic language for something like this. Bam. cljassify is 
-a simple, thin client for interacting with Classificationbox. It follows the API quite closely, and uses
-some sane defaults to make it easy to interact with Classificationbox at the repl or write simple tools but 
-should be complete enough to use for actual applications as well. 
+cljassify is a simple, thin client for interacting with Classificationbox. It
+follows the API quite closely, and uses some sane defaults to make it easy to
+interact with Classificationbox at the repl or write simple tools but should be
+complete enough to use for actual applications as well. 
+
+## Status
+
+Still a work in progress.
 
 ## Usage
 
