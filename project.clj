@@ -11,5 +11,6 @@
   :test-selectors {:default #(not-any? % [:integration :example])
                    :integration :integration
                    :example :example}
-  :profiles {:test 
-             {:dependencies [[clj-http-fake "1.0.3"]]}})
+  :profiles {:dev 
+             {:dependencies [[clj-http-fake "1.0.3"]]
+              :resource-paths ["test/resources"]}})
