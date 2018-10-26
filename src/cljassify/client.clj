@@ -57,6 +57,11 @@
       (cond->> ngrams (merge-with into {:options {:ngrams ngrams}}))
       (cond->> skipgrams (merge-with into {:options {:skipgrams skipgrams}}))))
 
+(defn- get-model-id
+  "Returns the model id if passed a model, otherwise assumes the param is a string model id."
+  [m]
+  (get m :id m))
+
 (defn- admin
   ([endpoint] (admin endpoint *default-box*))
   ([endpoint box]
@@ -104,11 +109,11 @@
 
 (defn delete-model
   "Delete a model by model id."
-  ([model-id]
-   (delete-model *default-box* model-id))
-  ([box model-id]
+  ([model]
+   (delete-model *default-box* model))
+  ([box model]
    (send-request box {:method :delete
-                      :uri (str "/classificationbox/models/" model-id)})))
+                      :uri (str "/classificationbox/models/" (get-model-id model))})))
 
 (defn teach-model
   "Teach a model. Takes a class and a list of example features:
@@ -124,12 +129,12 @@
           ]
   }
   "
-  ([model-id example]
-   (teach-model *default-box* model-id example))
-  ([box model-id example]
+  ([model example]
+   (teach-model *default-box* model example))
+  ([box model example]
    (send-request box {:method :post
                       :body (json/generate-string example)
-                      :uri (str "/classificationbox/models/" model-id "/teach")})))
+                      :uri (str "/classificationbox/models/" (get-model-id model) "/teach")})))
 
 (defn teach-model-multi
   "Teach multiple classes with a single request:
@@ -140,12 +145,12 @@
     {:class \"class2\",
       :inputs [{:key \"user_age\", :type \"number\", :value \"26\"}]}]}
   "
-  ([model-id examples]
-   (teach-model-multi *default-box* model-id examples))
-  ([box model-id examples]
+  ([model examples]
+   (teach-model-multi *default-box* model examples))
+  ([box model examples]
    (send-request box {:method :post
                       :body (json/generate-string examples)
-                      :uri (str "/classificationbox/models/" model-id "/teach-multi")})))
+                      :uri (str "/classificationbox/models/" (get-model-id model) "/teach-multi")})))
 
 (defn predict
   "Make predictions based on previously taught examples:
@@ -153,19 +158,19 @@
     {:limit 10, 
      :inputs [{:key \"user_age\", :type \"number\", :value \"32\"}]}
   "
-  ([model-id features]
-   (predict *default-box* model-id features))
-  ([box model-id features]
+  ([model features]
+   (predict *default-box* model features))
+  ([box model features]
    (send-request box {:method :post
                       :body (json/generate-string features)
-                      :uri (str "/classificationbox/models/" model-id "/predict")})))
+                      :uri (str "/classificationbox/models/" (get-model-id model) "/predict")})))
 
 (defn model-statistics
   "Returns statistics about the given model."
-  ([model-id]
-   (model-statistics *default-box* model-id))
-  ([box model-id]
-   (send-request box {:uri (str "/classificationbox/models/" model-id "/stats")})))
+  ([model]
+   (model-statistics *default-box* model))
+  ([box model]
+   (send-request box {:uri (str "/classificationbox/models/" (get-model-id model) "/stats")})))
 
 (defn list-models
   "List the known models."
@@ -176,10 +181,10 @@
 
 (defn get-model
   "Get a specific model by id."
-  ([model-id]
-   (get-model *default-box* model-id))
-  ([box model-id]
-   (send-request box {:uri (str "/classificationbox/models/" model-id)})))
+  ([model]
+   (get-model *default-box* model))
+  ([box model]
+   (send-request box {:uri (str "/classificationbox/models/" (get-model-id model))})))
 
 (defn- read-file-bytes
   [f]
@@ -223,8 +228,8 @@
     (with-open [w (io/output-stream \"my_model.dat\")] 
       (.write w (download-state my-model-id)))
   "
-  ([model-id]
-   (download-state *default-box* model-id))
-  ([box model-id]
+  ([model]
+   (download-state *default-box* model))
+  ([box model]
    (send-request box {:as :byte-array
-                      :uri (str "/classificationbox/state/" model-id)})))
+                      :uri (str "/classificationbox/state/" (get-model-id model))})))
