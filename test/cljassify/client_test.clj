@@ -1,6 +1,9 @@
 (ns cljassify.client-test
   (:require [clojure.test :refer :all]
-            [cljassify.client :refer :all]))
+            [cljassify.client :refer :all]
+            [clj-http.fake :refer :all]
+            [clojure.java.io :as io]
+            [cheshire.core :refer :all]))
 
 (deftest model-test
   (testing "model definition"
@@ -40,3 +43,16 @@
             :debug true
             :body-only false}
            (box "localhost" 8082 :username "robin" :password "banks" :debug true :body-only false)))))
+
+(defn slurp-file
+  [x]
+  (-> (str "responses/" x) io/resource slurp))
+
+(deftest client-test
+  (testing "client functions"
+    (with-fake-routes {"http://localhost:8080/info"
+                       (fn [r] {:status 200
+                                :body (-> "responses/info.json" io/resource slurp)})}
+      (is (= "ready" (:status (info))))
+      ;;
+      )))
