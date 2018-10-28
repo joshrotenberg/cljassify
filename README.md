@@ -4,6 +4,10 @@
 
 [![CircleCI](https://circleci.com/gh/joshrotenberg/cljassify.svg?style=svg)](https://circleci.com/gh/joshrotenberg/cljassify)
 
+[![Dependencies Status](https://versions.deps.co/joshrotenberg/cljassify/status.png)](https://versions.deps.co/joshrotenberg/cljassify)
+
+[![cljdoc badge](https://cljdoc.org/badge/manifold/manifold)](https://cljdoc.org/d/manifold/manifold/CURRENT)
+
 ## Overview
 
 cljassify is a simple, thin client for interacting with Classificationbox. It
