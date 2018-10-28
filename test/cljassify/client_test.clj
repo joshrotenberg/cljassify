@@ -53,6 +53,4 @@
     (with-fake-routes {"http://localhost:8080/info"
                        (fn [r] {:status 200
                                 :body (-> "responses/info.json" io/resource slurp)})}
-      (is (= "ready" (:status (info))))
-      ;;
-      )))
+      (is (= "ready" (:status (info)))))))
