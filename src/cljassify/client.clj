@@ -212,7 +212,6 @@
     (upload-state (io/file \"my_model.dat\")
     or even
     (upload-state byte-array-that-i-made)
-
   "
   ([state]
    (upload-state *default-box* state))
