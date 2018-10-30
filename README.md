@@ -2,7 +2,7 @@
 
 [Machine Box][0] [Classificationbox][1] Client Library in Clojure
 
-[![CircleCI](https://circleci.com/gh/joshrotenberg/cljassify.svg?style=svg)](https://circleci.com/gh/joshrotenberg/cljassify) [![Dependencies Status](https://versions.deps.co/joshrotenberg/cljassify/status.png)](https://versions.deps.co/joshrotenberg/cljassify) [![cljdoc badge](https://cljdoc.org/badge/joshrotenberg/cljassify)](https://cljdoc.org/d/joshrotenberg/cljassify/CURRENT)
+[![CircleCI](https://circleci.com/gh/joshrotenberg/cljassify.svg?style=svg)](https://circleci.com/gh/joshrotenberg/cljassify) [![Dependencies Status](https://versions.deps.co/joshrotenberg/cljassify/status.png)](https://versions.deps.co/joshrotenberg/cljassify) [![cljdoc badge](https://cljdoc.org/badge/cljassify/cljassify)](https://cljdoc.org/cljassify/cljassify/CURRENT)
 
 [![Clojars Project](https://img.shields.io/clojars/v/cljassify.svg)](https://clojars.org/cljassify)
 
