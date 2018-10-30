@@ -4,12 +4,35 @@
 
 [![CircleCI](https://circleci.com/gh/joshrotenberg/cljassify.svg?style=svg)](https://circleci.com/gh/joshrotenberg/cljassify) [![Dependencies Status](https://versions.deps.co/joshrotenberg/cljassify/status.png)](https://versions.deps.co/joshrotenberg/cljassify) [![cljdoc badge](https://cljdoc.org/badge/joshrotenberg/cljassify)](https://cljdoc.org/d/joshrotenberg/cljassify/CURRENT)
 
+[![Clojars Project](https://img.shields.io/clojars/v/cljassify.svg)](https://clojars.org/cljassify)
+
 ## Overview
 
 cljassify is a simple, thin client for interacting with Classificationbox. It
 follows the API quite closely, and uses some sane defaults to make it easy to
 interact with Classificationbox at the repl or write simple tools but should be
 complete enough to use for actual applications as well. 
+
+## Installation
+
+Lein/Boot
+```
+[cljassify "0.1.0-SNAPSHOT"]
+```
+
+Clojure CLI/deps.edn
+```
+cljassify {:mvn/version "0.1.0-SNAPSHOT"}
+```
+
+Maven
+```
+<dependency>
+  <groupId>cljassify</groupId>
+  <artifactId>cljassify</artifactId>
+  <version>0.1.0-SNAPSHOT</version>
+</dependency>
+```
 
 ## Status
 
