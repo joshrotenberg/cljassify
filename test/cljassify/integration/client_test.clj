@@ -1,6 +1,7 @@
 (ns cljassify.integration.client-test
   (:require [clojure.test :refer :all]
-            [cljassify.client :refer :all]))
+            [cljassify.client :refer :all]
+            [clojure.java.io :as io]))
 
 (def model-id "myModelId")
 
@@ -13,8 +14,7 @@
         (is (= true (:success response)))
         (is (= {} (:options response)))))
     (f)
-    (do
-      (delete-model model-id))))
+    (is (= true (:success (delete-model model-id))))))
 
 (def example {:class "class1"
               :inputs [{:key "user_age"
@@ -101,3 +101,30 @@
         (is (= {:success true} (teach-model model-id example))))
       (is (= {:success true, :predictions 0, :examples 5, :classes [{:name "class1", :examples 5}]}
              (model-statistics model-id))))))
+
+(deftest ^:integration list-models-test
+  (testing "list models endpoint"
+    (let [response (list-models (list-models))]
+      (is (= true (:success response)))
+      (is (= 1 (count (:models response))))
+      (is (= model-id (-> response :models first :id))))))
+
+(deftest ^:integration get-model-test
+  (testing "get model endpoint"
+    (let [response (get-model model-id)]
+      (is (= true (:success response)))
+      (is (= model-id (:id response))))))
+
+(deftest ^:integration model-and-model-id-argument-test
+  (testing "using a model or a model id"
+    (is (= (model-statistics model-id) (model-statistics (model ["doesn't" "matter"] :id model-id))))
+    (is (= (get-model model-id) (get-model (model ["doesn't" "matter"] :id model-id))))))
+
+(deftest ^:integration download-upload-stat-test
+  (testing "state download and uploadt"
+    (let [tmp-file (java.io.File/createTempFile "state" ".dat")]
+      (with-open [file (io/output-stream tmp-file)]
+        (.write file (download-state model-id)))
+      (is (= true (:success (upload-state tmp-file))))
+      (is (= true (:success (upload-state (.getAbsolutePath tmp-file)))))
+      (.deleteOnExit tmp-file))))
