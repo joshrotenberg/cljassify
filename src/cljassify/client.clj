@@ -14,6 +14,9 @@
               :accept :json
               :content-type :json
               :scheme :http}
+             (when (and (contains? box :username)
+                        (contains? box :password))
+               {:basic-auth [(:username box) (:password box)]})
              request)
       client/request
       (cond-> (get box :body-only true) :body)))

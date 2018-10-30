@@ -4,5 +4,7 @@ services:
         image: machinebox/classificationbox
         environment:
             - MB_KEY=${MB_KEY}
+              #- MB_BASICAUTH_USER=joe
+              #- MB_BASICAUTH_PASS=schmoe
         ports:
             - "8080:8080"
