@@ -24,9 +24,9 @@
 (defn box
   "Create a box. When called with no arguments, the standard local options will be returned (\"localhost:8080\").
   Otherwise, specify a host and a port and, optionally:
-  :username and :password for basic authentication, set :debug to true to turn on clj-http debugging, 
+  :username and :password for basic authentication, set :debug to true to turn on clj-http debugging,
   and set :body-only to false to return the entire response instead of just the body (also for debugging).
-  
+
   Note: all client functions can be optionally called without a box parameter to just use the default box, or
   the *default-box* can be redefined.
   "
@@ -47,7 +47,7 @@
 (def ^:dynamic *default-box* (box))
 
 (defn model
-  "Create a model, optionally giving it a name, id, and ngrams and/or skipgrams options. Classes should be a 
+  "Create a model, optionally giving it a name, id, and ngrams and/or skipgrams options. Classes should be a
   string, and a minimum of two are required."
   [classes & {:keys [name id ngrams skipgrams]
               :or {name (str (hash classes) "-n")
@@ -97,9 +97,9 @@
       :id \"myModelId\"
       :name \"myModelName\"
       :options {
-		:ngrams 1
-		:skipgrams 1
-	    }
+        :ngrams 1
+        :skipgrams 1
+      }
       :classes [\"class1\" \"class2\"]
     }
   "
@@ -120,13 +120,13 @@
 
 (defn teach-model
   "Teach a model. Takes a class and a list of example features:
- 
+
   {
-    :class \"class1\" 
+    :class \"class1\"
     :inputs [
             {
-              :key \"user_age\" 
-              :type \"number\" 
+              :key \"user_age\"
+              :type \"number\"
               :value \"32\"
             }
           ]
@@ -141,7 +141,7 @@
 
 (defn teach-model-multi
   "Teach multiple classes with a single request:
-  
+
   {:examples
     [{:class \"class1\",
       :inputs [{:key \"user_age\", :type \"number\", :value \"25\"}]}
@@ -157,8 +157,8 @@
 
 (defn predict
   "Make predictions based on previously taught examples:
- 
-    {:limit 10, 
+
+    {:limit 10,
      :inputs [{:key \"user_age\", :type \"number\", :value \"32\"}]}
   "
   ([model features]
@@ -209,7 +209,7 @@
 
 (defn upload-state
   "Upload a model's state:
-  
+
     (upload-state \"my_model.dat\")
     or
     (upload-state (io/file \"my_model.dat\")
@@ -226,8 +226,8 @@
 
 (defn download-state
   "Download a model's state. Returns a byte array:
-  
-    (with-open [w (io/output-stream \"my_model.dat\")] 
+
+    (with-open [w (io/output-stream \"my_model.dat\")]
       (.write w (download-state my-model-id)))
   "
   ([model]
