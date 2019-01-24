@@ -5,6 +5,32 @@
             [clojure.java.io :as io]
             [cheshire.core :refer :all]))
 
+(def base-test-url "http://localhost:8080")
+
+(defn test-url
+  [endpoint]
+  (clojure.string/join "/" [base-test-url endpoint]))
+
+(defn test-response
+  [response]
+  (fn [r] response))
+
+(defn slurp-file
+  [x]
+  (-> (str "responses/" x) io/resource slurp clojure.string/trim))
+
+(def fake-routes
+  {(test-url "info")
+   (test-response {:status 200 :body (slurp-file "info.json")})
+   (test-url "healthz")
+   (fn [r] {:status 200
+            :body (slurp-file "healthz.json")})
+   (test-url "readyz")
+   (fn [r] {:status 200})
+   (test-url "liveness")
+   (fn [r] {:status 200
+            :body (slurp-file "liveness.txt")})})
+
 (deftest model-test
   (testing "model definition"
     (let [classes '("class1" "class2")
@@ -44,13 +70,15 @@
             :body-only false}
            (box "localhost" 8082 :username "robin" :password "banks" :debug true :body-only false)))))
 
-(defn slurp-file
-  [x]
-  (-> (str "responses/" x) io/resource slurp))
-
 (deftest client-test
   (testing "client functions"
-    (with-fake-routes {"http://localhost:8080/info"
-                       (fn [r] {:status 200
-                                :body (-> "responses/info.json" io/resource slurp)})}
-      (is (= "ready" (:status (info)))))))
+    (with-fake-routes fake-routes
+      (testing "info endpoint"
+        (is (= true (:success (info))))
+        (is (= "ready" (:status (info)))))
+      (testing "healthz endpoint"
+        (is (= true (:success (healthz)))))
+      (testing "readyz endpoint"
+        (is   (= nil (readyz))))
+      (testing "liveness endpoint"
+        (is (= "OK" (liveness)))))))
