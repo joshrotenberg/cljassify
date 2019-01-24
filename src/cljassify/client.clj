@@ -52,7 +52,7 @@
   [classes & {:keys [name id ngrams skipgrams]
               :or {name (str (hash classes) "-n")
                    id (str (hash classes) "-i")}}]
-  (when-not (coll? classes)
+  (when-not (sequential? classes)
     (throw (IllegalArgumentException. "Classes must be a collection.")))
   (when-not (<= 2 (count classes))
     (throw (IllegalArgumentException. "A model must have at least two classes.")))
