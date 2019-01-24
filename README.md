@@ -10,8 +10,8 @@
 
 cljassify is a simple, thin client for interacting with Classificationbox. It
 follows the API quite closely, and uses some sane defaults to make it easy to
-interact with Classificationbox at the repl or write simple tools but should be
-complete enough to use for actual applications as well. 
+interact with Classificationbox at the repl or write simple tools but is
+complete enough to use for actual applications. 
 
 ## Installation
 
@@ -41,6 +41,7 @@ Still a work in progress.
 ## Usage
 
 ### Client
+
 ```clojure
 ;; define a model ...
 (def my-model (model ["class1" "class2"]))
@@ -63,12 +64,6 @@ Still a work in progress.
 (predict (:id my-model) features)
 ;; => {:classes [{:id "class1" :score 0.60721} {:id "class2" :score 0.39279}]
 ;;     :success true}
- 
-```
-
-### DSL
-```clojure
-;; TBD
 ```
 
 ## Docs
