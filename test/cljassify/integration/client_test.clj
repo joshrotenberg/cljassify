@@ -23,7 +23,6 @@
     (f)
     (.stop c)))
 
-
 (defn model-fixture
   [f]
   (let [my-model (model ["class1" "class2"] :id model-id)]
@@ -65,7 +64,6 @@
                         {:key "user_location"
                          :type "keyword"
                          :value "London"}]})
-
 
 (use-fixtures :once container-fixture model-fixture)
 
