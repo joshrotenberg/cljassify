@@ -5,10 +5,10 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.10.0"]
-                 [clj-http "3.9.1"]
+                 [clj-http "3.10.0"]
                  [cheshire "5.8.1"]]
-  :plugins [[lein-cloverage "1.0.7-SNAPSHOT"]
-            [lein-cljfmt "0.6.1"]
+  :plugins [[lein-cloverage "1.1.1"]
+            [lein-cljfmt "0.6.4"]
             [lein-marginalia "0.9.1"]]
   :javac-options ["-target" "1.8" "-source" "1.8"]
   :test-selectors {:default #(not-any? % [:integration :example])
